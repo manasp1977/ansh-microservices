@@ -1,0 +1,41 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: CUSTOMER-SERVICE
+
+  # Mail configuration (disabled by default - enable for production)
+  mail:
+    enabled: false
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Customer Support Configuration
+customer:
+  support:
+    email: support@anshshare.com
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+# Logging
+logging:
+  level:
+    com.ansh.customer: DEBUG
+    org.springframework.mail: DEBUG
