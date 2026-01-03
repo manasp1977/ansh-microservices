@@ -1,0 +1,148 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:*"
+              - "http://127.0.0.1:*"
+              - "http://192.168.*.*:*"
+              - "http://71.172.72.163:*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            exposedHeaders:
+              - "*"
+              - "Authorization"
+              - "Content-Type"
+            allowCredentials: true
+            maxAge: 3600
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Auth Service Routes (no JWT filter for login/signup)
+        - id: auth-service-auth
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+
+        # User Management Routes (requires JWT)
+        - id: auth-service-users
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Receipt Service Routes (requires JWT)
+        - id: receipt-service
+          uri: lb://RECEIPT-SERVICE
+          predicates:
+            - Path=/api/receipts/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Listing Service Routes (requires JWT)
+        - id: listing-service
+          uri: lb://LISTING-SERVICE
+          predicates:
+            - Path=/api/listings/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Cart Service Routes (requires JWT)
+        - id: cart-service
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Settlement Service Routes (requires JWT)
+        - id: settlement-service
+          uri: lb://SETTLEMENT-SERVICE
+          predicates:
+            - Path=/api/settlements/**,/api/balances/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Analytics Service Routes (requires JWT)
+        - id: analytics-service
+          uri: lb://ANALYTICS-SERVICE
+          predicates:
+            - Path=/api/analytics/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Admin Service Routes (requires JWT)
+        - id: admin-service
+          uri: lb://ADMIN-SERVICE
+          predicates:
+            - Path=/api/admin/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # User Profile Service Routes (requires JWT)
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/profiles/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Chat Service Routes (requires JWT)
+        - id: chat-service-api
+          uri: lb://CHAT-SERVICE
+          predicates:
+            - Path=/api/chat/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
+        # Chat WebSocket Route (requires userId query param)
+        - id: chat-service-ws
+          uri: lb:ws://CHAT-SERVICE
+          predicates:
+            - Path=/ws/chat/**
+          filters:
+            - StripPrefix=0
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+
+jwt:
+  secret: ${JWT_SECRET:dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+  expiration: 86400000
+
+logging:
+  level:
+    root: INFO
+    com.ansh.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
