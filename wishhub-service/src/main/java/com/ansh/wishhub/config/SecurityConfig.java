@@ -1,4 +1,4 @@
-package com.ansh.settlement.config;
+package com.ansh.wishhub.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 /**
- * Security configuration for Settlement Service.
+ * Security configuration for WishHub Service.
  */
 @Configuration
 @EnableWebSecurity
@@ -29,7 +29,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/settlement/**").permitAll()
+                        .requestMatchers("/wishes/**").permitAll()
+                        .requestMatchers("/images/**").permitAll()
                         .anyRequest().permitAll()
                 );
 

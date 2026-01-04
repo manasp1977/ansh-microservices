@@ -1,9 +1,9 @@
 spring:
   application:
-    name: SETTLEMENT-SERVICE
+    name: WISHHUB-SERVICE
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/settlement_db
+    url: jdbc:postgresql://localhost:5432/wishhub_db
     username: postgres
     password: manasp1977
     driver-class-name: org.postgresql.Driver
@@ -25,9 +25,11 @@ spring:
     baseline-on-migrate: true
     validate-on-migrate: false
     locations: classpath:db/migration
+    username: postgres
+    password: manasp1977
 
 server:
-  port: 8085
+  port: 8091
 
 eureka:
   client:
@@ -39,6 +41,10 @@ eureka:
     prefer-ip-address: false
     hostname: localhost
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+jwt:
+  secret: ${JWT_SECRET:dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+  expiration: 86400000
 
 # Feign client configuration
 feign:
@@ -52,5 +58,16 @@ feign:
 logging:
   level:
     root: INFO
-    com.ansh.settlement: DEBUG
+    com.ansh.wishhub: DEBUG
     org.hibernate.SQL: DEBUG
+
+# File upload configuration
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:uploads/wishes}
+  base-url: ${FILE_BASE_URL:http://localhost:8091/images}
+
+# Spring multipart file upload settings
+spring.servlet.multipart:
+  enabled: true
+  max-file-size: 5MB
+  max-request-size: 10MB

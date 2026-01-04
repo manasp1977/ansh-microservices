@@ -127,6 +127,15 @@ spring:
           filters:
             - StripPrefix=0
 
+        # WishHub Service Routes (requires JWT)
+        - id: wishhub-service
+          uri: lb://WISHHUB-SERVICE
+          predicates:
+            - Path=/api/wishhub/**
+          filters:
+            - StripPrefix=2
+            - JwtAuthenticationFilter
+
 server:
   port: 8080
 

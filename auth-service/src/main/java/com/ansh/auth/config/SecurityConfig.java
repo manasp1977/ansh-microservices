@@ -17,9 +17,6 @@ import java.util.Arrays;
 
 /**
  * Security configuration for Auth Service.
- *
- * In microservices architecture, the API Gateway handles JWT authentication.
- * This service trusts the gateway and uses user context from request headers (X-User-Id, X-User-Email).
  */
 @Configuration
 @EnableWebSecurity
@@ -29,20 +26,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Allow all requests - API Gateway handles authentication
-                        // Authentication endpoints (login, signup)
                         .requestMatchers("/auth/**").permitAll()
-                        // User management endpoints - gateway adds X-User-Id header after JWT validation
                         .requestMatchers("/users/**").permitAll()
                         .anyRequest().permitAll()
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     /**
