@@ -1,0 +1,76 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+*.iml
+*.ipr
+*.iws
+.vscode
+.settings
+.project
+.classpath
+
+# Build outputs (allow JAR files, exclude everything else)
+**/target/*
+!**/target/*.jar
+**/build/
+**/dist/
+**/out/
+
+# Logs
+*.log
+logs/
+
+# Documentation
+*.md
+docs/
+README*
+LICENSE
+
+# Docker files (don't copy Docker-related files into the image)
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# AWS files
+aws/
+.aws/
+
+# Scripts
+scripts/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Test files (skipping tests in build)
+**/src/test/
+**/*Test.java
+**/*Tests.java
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# Node modules (if any)
+node_modules/
+
+# Maven wrapper (will use system Maven or install in Docker)
+.mvn/
+mvnw
+mvnw.cmd
