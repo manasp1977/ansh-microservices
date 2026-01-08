@@ -13,7 +13,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
-    mem_limit: 256m
+    mem_limit: 200m
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U anshshare_admin"]
       interval: 10s
@@ -29,8 +29,8 @@ services:
       - "8761:8761"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_OPTS=-Xmx256m -Xms128m
-    mem_limit: 384m
+      - JAVA_OPTS=-Xmx224m -Xms128m
+    mem_limit: 300m
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
       interval: 30s
@@ -48,8 +48,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx192m -Xms128m
-    mem_limit: 320m
+      - JAVA_OPTS=-Xmx192m -Xms96m
+    mem_limit: 384m
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -73,8 +73,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx192m -Xms128m
-    mem_limit: 320m
+      - JAVA_OPTS=-Xmx192m -Xms96m
+    mem_limit: 384m
     depends_on:
       postgres:
         condition: service_healthy
@@ -100,8 +100,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx192m -Xms128m
+      - JAVA_OPTS=-Xmx160m -Xms96m
     mem_limit: 320m
+    volumes:
+      - listing_uploads:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -127,7 +129,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx192m -Xms128m
+      - JAVA_OPTS=-Xmx160m -Xms96m
     mem_limit: 320m
     depends_on:
       postgres:
@@ -154,8 +156,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx128m -Xms96m
-    mem_limit: 256m
+      - JAVA_OPTS=-Xmx128m -Xms64m
+    mem_limit: 320m
     depends_on:
       postgres:
         condition: service_healthy
@@ -175,8 +177,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx128m -Xms96m
-    mem_limit: 256m
+      - JAVA_OPTS=-Xmx128m -Xms64m
+    mem_limit: 320m
     depends_on:
       postgres:
         condition: service_healthy
@@ -196,8 +198,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx128m -Xms96m
-    mem_limit: 256m
+      - JAVA_OPTS=-Xmx128m -Xms64m
+    mem_limit: 320m
+    volumes:
+      - user_uploads:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -217,8 +221,71 @@ services:
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - JAVA_OPTS=-Xmx128m -Xms96m
-    mem_limit: 256m
+      - JAVA_OPTS=-Xmx128m -Xms64m
+    mem_limit: 320m
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - anshshare-network
+
+  analytics-service:
+    image: anshshare/analytics-service:latest
+    container_name: analytics-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/analytics_service_db
+      - SPRING_DATASOURCE_USERNAME=anshshare_admin
+      - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JAVA_OPTS=-Xmx128m -Xms64m
+    mem_limit: 320m
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - anshshare-network
+
+  admin-service:
+    image: anshshare/admin-service:latest
+    container_name: admin-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/admin_service_db
+      - SPRING_DATASOURCE_USERNAME=anshshare_admin
+      - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JAVA_OPTS=-Xmx128m -Xms64m
+    mem_limit: 320m
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - anshshare-network
+
+  chat-service:
+    image: anshshare/chat-service:latest
+    container_name: chat-service
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chat_service_db
+      - SPRING_DATASOURCE_USERNAME=anshshare_admin
+      - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JAVA_OPTS=-Xmx192m -Xms96m
+    mem_limit: 384m
     depends_on:
       postgres:
         condition: service_healthy
@@ -229,6 +296,8 @@ services:
 
 volumes:
   postgres_data:
+  listing_uploads:
+  user_uploads:
 
 networks:
   anshshare-network:
