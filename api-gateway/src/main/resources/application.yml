@@ -82,8 +82,9 @@ spring:
             - JwtAuthenticationFilter
 
         # Settlement Service Routes (requires JWT)
+        # Direct connection to bypass load balancer hostname resolution issue
         - id: settlement-service
-          uri: lb://SETTLEMENT-SERVICE
+          uri: http://settlement-service:8085
           predicates:
             - Path=/api/settlements/**,/api/balances/**
           filters:
@@ -91,8 +92,9 @@ spring:
             - JwtAuthenticationFilter
 
         # Analytics Service Routes (requires JWT)
+        # Direct connection to bypass load balancer hostname resolution issue
         - id: analytics-service
-          uri: lb://ANALYTICS-SERVICE
+          uri: http://analytics-service:8086
           predicates:
             - Path=/api/analytics/**
           filters:
@@ -140,7 +142,7 @@ spring:
           predicates:
             - Path=/api/wishhub/**
           filters:
-            - StripPrefix=2
+            - StripPrefix=1
             - JwtAuthenticationFilter
 
 server:

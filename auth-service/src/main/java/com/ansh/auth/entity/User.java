@@ -39,9 +39,6 @@ public class User {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "location", columnDefinition = "geography(Point, 4326)", insertable = false, updatable = false)
-    private String location;
-
     @Column(length = 500)
     private String avatar;
 
@@ -132,14 +129,6 @@ public class User {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getAvatar() {

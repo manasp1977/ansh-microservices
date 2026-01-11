@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/wishes")
+@RequestMapping("/wishhub")
 public class WishController {
 
     private static final Logger log = LoggerFactory.getLogger(WishController.class);
@@ -30,19 +30,25 @@ public class WishController {
 
     @GetMapping
     public ResponseEntity<WishListResponse> getAllWishes() {
-        log.debug("GET /wishes - fetching all wishes");
+        log.debug("GET /wishhub - fetching all wishes");
+        return ResponseEntity.ok(wishService.getOpenWishes());
+    }
+
+    @GetMapping("/wishes")
+    public ResponseEntity<WishListResponse> getAllWishesAlt() {
+        log.debug("GET /wishhub/wishes - fetching all wishes");
         return ResponseEntity.ok(wishService.getOpenWishes());
     }
 
     @GetMapping("/all")
     public ResponseEntity<WishListResponse> getAllWishesIncludingClaimed() {
-        log.debug("GET /wishes/all - fetching all wishes including claimed");
+        log.debug("GET /wishhub/all - fetching all wishes including claimed");
         return ResponseEntity.ok(wishService.getAllWishes());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<WishResponse> getWishById(@PathVariable String id) {
-        log.debug("GET /wishes/{}", id);
+        log.debug("GET /wishhub/{}", id);
         return ResponseEntity.ok(wishService.getWishById(id));
     }
 
@@ -68,7 +74,16 @@ public class WishController {
     public ResponseEntity<WishResponse> createWish(
             @RequestHeader("X-User-Id") String userId,
             @Valid @RequestBody CreateWishRequest request) {
-        log.debug("POST /wishes - creating wish for user {}", userId);
+        log.debug("POST /wishhub - creating wish for user {}", userId);
+        WishResponse response = wishService.createWish(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/wishes")
+    public ResponseEntity<WishResponse> createWishAlt(
+            @RequestHeader("X-User-Id") String userId,
+            @Valid @RequestBody CreateWishRequest request) {
+        log.debug("POST /wishhub/wishes - creating wish for user {}", userId);
         WishResponse response = wishService.createWish(userId, request);
         return ResponseEntity.ok(response);
     }

@@ -15,10 +15,9 @@ import java.util.Map;
  * Used to validate that receipts exist before creating listings
  * and to mark receipt items as listed.
  *
- * Direct URL configuration bypasses Eureka service discovery.
- * For production with Eureka, remove url parameter.
+ * Uses Eureka service discovery to locate RECEIPT-SERVICE.
  */
-@FeignClient(name = "RECEIPT-SERVICE", url = "http://localhost:8082")
+@FeignClient(name = "RECEIPT-SERVICE")
 public interface ReceiptServiceClient {
 
     /**

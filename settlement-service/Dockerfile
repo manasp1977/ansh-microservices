@@ -6,7 +6,7 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copy the pre-built JAR file
-COPY settlement-service/target/settlement-service-*.jar app.jar
+COPY target/settlement-service-*.jar app.jar
 
 # Change ownership
 RUN chown spring:spring app.jar

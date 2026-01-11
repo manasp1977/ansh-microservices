@@ -6,7 +6,7 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copy the pre-built JAR file
-COPY eureka-server/target/eureka-server-*.jar app.jar
+COPY target/eureka-server-*.jar app.jar
 
 # Change ownership
 RUN chown spring:spring app.jar

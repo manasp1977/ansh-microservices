@@ -32,3 +32,14 @@ logging:
   level:
     root: INFO
     com.ansh.analytics: DEBUG
+    feign: DEBUG
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

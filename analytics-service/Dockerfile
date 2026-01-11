@@ -6,7 +6,7 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copy the pre-built JAR file
-COPY analytics-service/target/analytics-service-*.jar app.jar
+COPY target/analytics-service-*.jar app.jar
 
 # Change ownership
 RUN chown spring:spring app.jar

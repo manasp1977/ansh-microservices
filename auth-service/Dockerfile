@@ -6,7 +6,7 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copy the pre-built JAR file
-COPY auth-service/target/auth-service-*.jar app.jar
+COPY target/auth-service-*.jar app.jar
 
 # Change ownership
 RUN chown spring:spring app.jar

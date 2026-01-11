@@ -1,0 +1,141 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AnshShare UAT - RDS PostgreSQL Database'
+
+Parameters:
+  VPCId:
+    Type: String
+    Description: VPC ID where RDS will be deployed
+    Default: ''
+
+  Subnet1Id:
+    Type: String
+    Description: First subnet ID for RDS (must be in different AZ)
+    Default: ''
+
+  Subnet2Id:
+    Type: String
+    Description: Second subnet ID for RDS (must be in different AZ)
+    Default: ''
+
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: RDS PostgreSQL master password (min 8 characters)
+    MinLength: 8
+    Default: AnshShare2024!
+
+  EC2SecurityGroupId:
+    Type: String
+    Description: Security Group ID of EC2 instances that need to access RDS
+    Default: ''
+
+  Environment:
+    Type: String
+    Description: Environment name
+    Default: uat
+    AllowedValues:
+      - uat
+      - prod
+
+Resources:
+  # Security Group for RDS
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub 'anshshare-rds-sg-${Environment}'
+      GroupDescription: !Sub 'Security group for RDS PostgreSQL - ${Environment}'
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref EC2SecurityGroupId
+          Description: Allow PostgreSQL access from EC2 instances
+      Tags:
+        - Key: Name
+          Value: !Sub 'anshshare-rds-sg-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # DB Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub 'anshshare-db-subnet-group-${Environment}'
+      DBSubnetGroupDescription: !Sub 'Subnet group for RDS - ${Environment}'
+      SubnetIds:
+        - !Ref Subnet1Id
+        - !Ref Subnet2Id
+      Tags:
+        - Key: Name
+          Value: !Sub 'anshshare-db-subnet-group-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # RDS PostgreSQL Instance
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: !Sub 'anshshare-db-${Environment}'
+      Engine: postgres
+      EngineVersion: '15.10'
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      MaxAllocatedStorage: 100
+      StorageType: gp3
+      StorageEncrypted: true
+      MasterUsername: anshshare_admin
+      MasterUserPassword: !Ref DBPassword
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 7
+      PreferredBackupWindow: '03:00-04:00'
+      PreferredMaintenanceWindow: 'sun:04:00-sun:05:00'
+      EnableCloudwatchLogsExports:
+        - postgresql
+      DeletionProtection: false
+      CopyTagsToSnapshot: true
+      Tags:
+        - Key: Name
+          Value: !Sub 'anshshare-rds-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: MonthlyCost
+          Value: '15-USD-per-month'
+
+Outputs:
+  RDSEndpoint:
+    Description: RDS Endpoint Address
+    Value: !GetAtt RDSInstance.Endpoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-RDSEndpoint'
+
+  RDSPort:
+    Description: RDS Port
+    Value: !GetAtt RDSInstance.Endpoint.Port
+    Export:
+      Name: !Sub '${AWS::StackName}-RDSPort'
+
+  RDSInstanceId:
+    Description: RDS Instance ID
+    Value: !Ref RDSInstance
+    Export:
+      Name: !Sub '${AWS::StackName}-RDSInstanceId'
+
+  RDSSecurityGroupId:
+    Description: RDS Security Group ID
+    Value: !Ref RDSSecurityGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-RDSSecurityGroupId'
+
+  ConnectionString:
+    Description: PostgreSQL Connection String Template
+    Value: !Sub 'postgresql://anshshare_admin:${DBPassword}@${RDSInstance.Endpoint.Address}:${RDSInstance.Endpoint.Port}/{database_name}'
+
+  JDBCConnectionString:
+    Description: JDBC Connection String Template
+    Value: !Sub 'jdbc:postgresql://${RDSInstance.Endpoint.Address}:${RDSInstance.Endpoint.Port}/{database_name}'
