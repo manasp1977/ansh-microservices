@@ -1,0 +1,238 @@
+╔════════════════════════════════════════════════════════════════╗
+║         RDS PostgreSQL Deployment Checklist - UAT              ║
+╚════════════════════════════════════════════════════════════════╝
+
+PRE-DEPLOYMENT
+==============================================================================
+[ ] AWS CLI installed and configured
+    → aws --version (should be 2.x)
+    → aws sts get-caller-identity (verify credentials)
+
+[ ] PostgreSQL client installed
+    → psql --version (required for database initialization)
+    → Ubuntu/Debian: sudo apt-get install postgresql-client
+    → macOS: brew install postgresql
+    → Windows: Download from postgresql.org
+
+[ ] EC2 instance running in UAT
+    → Check AWS Console or: aws ec2 describe-instances
+
+[ ] Git repository is clean
+    → git status (commit any pending changes)
+
+DEPLOYMENT
+==============================================================================
+[ ] Run automated setup script
+    → cd ansh-microservices
+    → bash aws/scripts/setup-rds-complete.sh
+    → Enter database password when prompted
+    → Wait ~15 minutes for completion
+
+    OR manual steps:
+
+    [ ] Deploy RDS instance
+        → bash aws/scripts/deploy-rds-uat.sh
+
+    [ ] Wait for RDS to be available
+        → Check AWS Console: RDS → Databases → anshshare-db-uat
+        → Status should be "Available" (takes 5-10 minutes)
+
+    [ ] Initialize databases
+        → bash aws/scripts/init-rds-databases.sh
+        → Enter database password
+
+    [ ] Update UAT configuration
+        → bash aws/scripts/update-uat-config-for-rds.sh
+
+    [ ] Remove PostgreSQL from docker-compose
+        → bash aws/scripts/remove-postgres-from-docker-compose.sh
+
+VERIFICATION
+==============================================================================
+[ ] RDS instance is available
+    → aws rds describe-db-instances \
+      --db-instance-identifier anshshare-db-uat \
+      --region us-east-2 \
+      --query 'DBInstances[0].DBInstanceStatus'
+    → Should show: "available"
+
+[ ] Configuration files updated
+    → cat config/environments/uat.properties | grep db.host
+    → Should show RDS endpoint (not "postgres")
+
+[ ] Docker compose updated
+    → grep -c "postgres:" docker-compose.uat.yml
+    → Should return: 0 (postgres service removed)
+
+[ ] Backups created
+    → ls -la config/environments/uat.properties.backup
+    → ls -la docker-compose.uat.yml.backup
+
+EC2 DEPLOYMENT
+==============================================================================
+[ ] Commit configuration changes
+    → git add config/environments/uat.properties docker-compose.uat.yml
+    → git commit -m "Switch UAT to RDS PostgreSQL"
+    → git push
+
+[ ] SSH to EC2 instance
+    → ssh -i ~/.ssh/anshshare-key.pem ec2-user@<EC2_IP>
+
+[ ] Pull latest changes on EC2
+    → cd ansh-microservices
+    → git pull
+
+[ ] Stop services
+    → docker-compose -f docker-compose.uat.yml down
+
+[ ] Remove old containers and volumes
+    → docker-compose -f docker-compose.uat.yml rm -f
+    → docker volume prune -f
+
+[ ] Start services with RDS
+    → docker-compose -f docker-compose.uat.yml up -d
+
+[ ] Wait for services to start
+    → docker-compose -f docker-compose.uat.yml ps
+    → Wait until all show "Up"
+
+TESTING
+==============================================================================
+[ ] Check auth-service can connect to RDS
+    → docker logs auth-service 2>&1 | grep -i "flyway.*success"
+    → Should see successful migration messages
+
+[ ] Check all services are healthy
+    → for svc in auth-service receipt-service listing-service cart-service; do
+        echo "=== $svc ===" 
+        docker logs $svc 2>&1 | tail -5
+      done
+
+[ ] Test application endpoints
+    → curl http://<EC2_IP>:8080/api/auth/health
+    → Should return 200 OK
+
+[ ] Create test user
+    → Access: http://<EC2_IP>:8080
+    → Sign up with test account
+    → Verify signup succeeds
+
+[ ] Create test data
+    → Create a listing
+    → Create a wish
+    → Add item to cart
+
+[ ] Verify data persistence
+    → Stop EC2: sudo shutdown -h now
+    → Start EC2 from AWS Console
+    → Wait for services to start
+    → Login with test account
+    → Verify data still exists ✓
+
+MONITORING
+==============================================================================
+[ ] Check CloudWatch metrics
+    → AWS Console → RDS → anshshare-db-uat → Monitoring
+    → Verify CPU, Connections, Storage metrics
+
+[ ] View database logs
+    → AWS Console → CloudWatch → Log Groups
+    → /aws/rds/instance/anshshare-db-uat/postgresql
+
+[ ] Set up billing alerts (optional)
+    → AWS Console → Billing → Budgets
+    → Create budget for $25/month
+
+POST-DEPLOYMENT
+==============================================================================
+[ ] Document RDS endpoint
+    → Save RDS endpoint for team reference
+    → Store database password securely
+
+[ ] Schedule first manual backup
+    → aws rds create-db-snapshot \
+      --db-instance-identifier anshshare-db-uat \
+      --db-snapshot-identifier uat-initial-backup \
+      --region us-east-2
+
+[ ] Update team documentation
+    → Share RDS connection details
+    → Update deployment procedures
+
+[ ] Review costs
+    → AWS Console → Cost Explorer
+    → Verify within expected range ($17-20/month or $2-5 with free tier)
+
+OPTIONAL OPTIMIZATIONS
+==============================================================================
+[ ] Enable SSL connections (optional)
+    → Update JDBC URL with ?sslmode=require
+
+[ ] Set up cost alerts
+    → AWS Console → CloudWatch → Alarms
+    → Alert if costs exceed $30/month
+
+[ ] Schedule automated snapshots
+    → Already configured (7-day retention)
+    → Create additional manual snapshots as needed
+
+[ ] Enable Performance Insights (optional)
+    → RDS Console → Modify → Enable Performance Insights
+
+TROUBLESHOOTING CHECKLIST
+==============================================================================
+If services can't connect to RDS:
+
+[ ] RDS security group allows EC2 access
+    → Check inbound rules: port 5432 from EC2 security group
+
+[ ] RDS endpoint is correct in uat.properties
+    → Should be: anshshare-db-uat.xxxxx.us-east-2.rds.amazonaws.com
+
+[ ] Test connection from EC2
+    → psql -h <endpoint> -U anshshare_admin -d postgres
+
+[ ] Check service environment variables
+    → docker exec auth-service env | grep DATABASE
+
+[ ] Review service logs
+    → docker logs auth-service --tail 100
+
+ROLLBACK (IF NEEDED)
+==============================================================================
+[ ] Delete RDS stack
+    → aws cloudformation delete-stack --stack-name anshshare-rds-uat
+
+[ ] Restore configuration backups
+    → cp config/environments/uat.properties.backup config/environments/uat.properties
+    → cp docker-compose.uat.yml.backup docker-compose.uat.yml
+
+[ ] Commit rollback
+    → git add config/ docker-compose.uat.yml
+    → git commit -m "Rollback to containerized PostgreSQL"
+    → git push
+
+[ ] Restart services on EC2
+    → docker-compose -f docker-compose.uat.yml down
+    → docker-compose -f docker-compose.uat.yml up -d
+
+COMPLETION
+==============================================================================
+[ ] All checks passed
+[ ] Data persists after EC2 restart
+[ ] Team notified of changes
+[ ] Documentation updated
+[ ] First backup created
+
+╔════════════════════════════════════════════════════════════════╗
+║  ✓ RDS PostgreSQL Deployment Complete!                        ║
+╚════════════════════════════════════════════════════════════════╝
+
+Notes:
+______________________________________________________________________
+______________________________________________________________________
+______________________________________________________________________
+______________________________________________________________________
+
+Completed by: ________________  Date: ________________
+

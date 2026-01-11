@@ -370,3 +370,97 @@ For issues or questions:
 - [ECS Documentation](https://docs.aws.amazon.com/ecs/)
 - [RDS Documentation](https://docs.aws.amazon.com/rds/)
 - [ECR Documentation](https://docs.aws.amazon.com/ecr/)
+
+## RDS PostgreSQL for UAT (Recommended)
+
+### Why Use RDS?
+
+If you're using EC2 for UAT deployment, we recommend using RDS PostgreSQL instead of a containerized database:
+
+**Benefits:**
+- ✓ **Data Persistence**: Data survives EC2 restarts/terminations
+- ✓ **Automated Backups**: 7-day retention with point-in-time recovery  
+- ✓ **Better Performance**: Dedicated database instance
+- ✓ **Easy Scaling**: Auto-scaling storage (20-100 GB)
+- ✓ **Monitoring**: CloudWatch metrics included
+
+**Cost:**
+- **Free Tier**: ~$2-5/month (first 12 months)
+- **Regular**: ~$17-20/month
+- db.t3.micro + 20 GB storage
+
+### Quick Setup
+
+**One command to set up everything:**
+
+```bash
+bash aws/scripts/setup-rds-complete.sh
+```
+
+This will:
+1. Deploy RDS PostgreSQL instance
+2. Create all 11 databases
+3. Update UAT configuration
+4. Remove PostgreSQL from docker-compose
+
+**Time:** ~15 minutes (includes 10 min for RDS to become available)
+
+### Manual Setup
+
+If you prefer step-by-step control:
+
+```bash
+# 1. Deploy RDS (10 min wait)
+bash aws/scripts/deploy-rds-uat.sh
+
+# 2. Initialize databases
+bash aws/scripts/init-rds-databases.sh
+
+# 3. Update configuration
+bash aws/scripts/update-uat-config-for-rds.sh
+
+# 4. Remove PostgreSQL container
+bash aws/scripts/remove-postgres-from-docker-compose.sh
+```
+
+### After Setup
+
+On your EC2 instance, restart services:
+
+```bash
+ssh -i ~/.ssh/anshshare-key.pem ec2-user@<EC2_IP>
+cd ansh-microservices
+docker-compose -f docker-compose.uat.yml down
+docker-compose -f docker-compose.uat.yml up -d
+```
+
+### RDS Management
+
+**Stop RDS to save money:**
+```bash
+aws rds stop-db-instance \
+    --db-instance-identifier anshshare-db-uat \
+    --region us-east-2
+```
+
+**Start RDS:**
+```bash
+aws rds start-db-instance \
+    --db-instance-identifier anshshare-db-uat \
+    --region us-east-2
+```
+
+**Create backup:**
+```bash
+aws rds create-db-snapshot \
+    --db-instance-identifier anshshare-db-uat \
+    --db-snapshot-identifier uat-backup-$(date +%Y%m%d) \
+    --region us-east-2
+```
+
+### More Information
+
+- **Quick Start**: [QUICK_START_RDS.md](QUICK_START_RDS.md)
+- **Full Guide**: [RDS_DEPLOYMENT_GUIDE.md](RDS_DEPLOYMENT_GUIDE.md)
+- **Scripts**: [scripts/README.md](scripts/README.md)
+

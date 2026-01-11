@@ -1,26 +1,6 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: anshshare-postgres
-    environment:
-      POSTGRES_USER: anshshare_admin
-      POSTGRES_PASSWORD: AnshShare2024!
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U anshshare_admin"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - anshshare-network
-
   eureka-server:
     image: anshshare/eureka-server:latest
     container_name: eureka-server
@@ -66,8 +46,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -88,8 +66,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -110,8 +86,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -132,8 +106,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -154,8 +126,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -176,8 +146,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -198,8 +166,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -220,8 +186,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -244,8 +208,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -266,8 +228,6 @@ services:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -289,8 +249,6 @@ services:
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
       - FILE_UPLOAD_DIR=/app/uploads/wishes
     depends_on:
-      postgres:
-        condition: service_healthy
       eureka-server:
         condition: service_healthy
     healthcheck:
@@ -305,7 +263,6 @@ services:
       - anshshare-network
 
 volumes:
-  postgres_data:
 
 networks:
   anshshare-network:

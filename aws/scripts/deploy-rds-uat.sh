@@ -28,12 +28,12 @@ echo ""
 echo "Fetching EC2 instance information..."
 INSTANCE_ID=$(aws ec2 describe-instances \
     --region $REGION \
-    --filters "Name=tag:Name,Values=anshshare-ec2" "Name=instance-state-name,Values=running" \
+    --filters "Name=tag:Name,Values=ansh-ec2" "Name=instance-state-name,Values=running" \
     --query 'Reservations[0].Instances[0].InstanceId' \
     --output text 2>/dev/null || echo "")
 
 if [ -z "$INSTANCE_ID" ] || [ "$INSTANCE_ID" = "None" ]; then
-    echo "ERROR: Could not find running EC2 instance with tag Name=anshshare-ec2"
+    echo "ERROR: Could not find running EC2 instance with tag Name=ansh-ec2"
     echo "Please make sure your EC2 instance is running"
     exit 1
 fi
