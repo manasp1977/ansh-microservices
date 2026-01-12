@@ -139,8 +139,33 @@ spring:
           filters:
             - StripPrefix=0
 
-        # WishHub Service Routes (requires JWT)
-        - id: wishhub-service
+        # WishHub Service Routes - Public (no JWT required for viewing specific endpoints)
+        - id: wishhub-service-public-wishes
+          uri: lb://WISHHUB-SERVICE
+          predicates:
+            - Path=/api/wishhub/wishes
+            - Method=GET
+          filters:
+            - StripPrefix=1
+
+        - id: wishhub-service-public-root
+          uri: lb://WISHHUB-SERVICE
+          predicates:
+            - Path=/api/wishhub
+            - Method=GET
+          filters:
+            - StripPrefix=1
+
+        - id: wishhub-service-public-all
+          uri: lb://WISHHUB-SERVICE
+          predicates:
+            - Path=/api/wishhub/all
+            - Method=GET
+          filters:
+            - StripPrefix=1
+
+        # WishHub Service Routes - Authenticated (requires JWT for all other requests)
+        - id: wishhub-service-auth
           uri: lb://WISHHUB-SERVICE
           predicates:
             - Path=/api/wishhub/**

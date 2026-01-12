@@ -39,3 +39,9 @@ logging:
   level:
     com.ansh.customer: DEBUG
     org.springframework.mail: DEBUG
+
+# Health check configuration
+management:
+  health:
+    mail:
+      enabled: false

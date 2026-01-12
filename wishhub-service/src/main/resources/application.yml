@@ -48,6 +48,8 @@ cors:
     origins: ${CORS_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}
 
 # Feign client configuration
+
+
 feign:
   client:
     config:
