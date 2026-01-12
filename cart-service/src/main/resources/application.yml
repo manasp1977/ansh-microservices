@@ -3,9 +3,9 @@ spring:
     name: CART-SERVICE
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/cart_db
-    username: postgres
-    password: manasp1977
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/cart_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -25,8 +25,8 @@ spring:
     baseline-on-migrate: true
     validate-on-migrate: false
     locations: classpath:db/migration
-    username: postgres
-    password: manasp1977
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 
 server:
   port: 8084
@@ -34,7 +34,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     fetch-registry: true
     register-with-eureka: true
   instance:

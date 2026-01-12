@@ -21,7 +21,6 @@ public class SignupRequest {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    @NotBlank(message = "Zip code is required")
     @Size(min = 5, max = 10, message = "Zip code must be between 5 and 10 characters")
     private String zipCode;
 

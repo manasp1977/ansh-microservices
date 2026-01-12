@@ -25,6 +25,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -45,9 +46,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/auth_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
+      - CORS_ALLOWED_ORIGINS=http://localhost:*,http://127.0.0.1:*,https://splitsavers.com,https://www.splitsavers.com,https://api.splitsavers.com,http://s3-ansh-ui.s3-website.us-east-2.amazonaws.com
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -68,6 +71,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/receipt_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -91,6 +95,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/listing_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -114,6 +119,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/cart_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -137,6 +143,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/settlement_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -160,6 +167,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/analytics_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -183,6 +191,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/admin_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -206,6 +215,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/user_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -231,6 +241,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/chat_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -254,6 +265,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/customer_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
@@ -277,10 +289,12 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=uat
       - JWT_SECRET=${JWT_SECRET:-dGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktY2hhbmdlLWluLXByb2R1Y3Rpb24=}
+      - EUREKA_URL=http://eureka-server:8761/eureka/
       - FILE_UPLOAD_DIR=/app/uploads/wishes
       - SPRING_DATASOURCE_URL=jdbc:postgresql://anshshare-db-uat.cri426askc5s.us-east-2.rds.amazonaws.com:5432/wishhub_db
       - SPRING_DATASOURCE_USERNAME=anshshare_admin
       - SPRING_DATASOURCE_PASSWORD=AnshShare2024!
+      - CORS_ALLOWED_ORIGINS=http://localhost:*,http://127.0.0.1:*,https://splitsavers.com,https://www.splitsavers.com,https://api.splitsavers.com,http://s3-ansh-ui.s3-website.us-east-2.amazonaws.com
     depends_on:
       eureka-server:
         condition: service_healthy
