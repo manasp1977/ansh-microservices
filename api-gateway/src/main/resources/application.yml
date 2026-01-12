@@ -10,6 +10,7 @@ spring:
               - "http://localhost:*"
               - "http://127.0.0.1:*"
               - "http://192.168.*.*:*"
+              - "http://10.0.0.*:*"
               - "http://71.172.72.163:*"
               - "http://s3-ansh-ui.s3-website.us-east-2.amazonaws.com"
               - "http://*.s3-website.*.amazonaws.com"
@@ -18,6 +19,8 @@ spring:
               - "https://splitsavers.com"
               - "https://www.splitsavers.com"
               - "https://api.splitsavers.com"
+              - "capacitor://localhost"
+              - "ionic://localhost"
             allowedMethods:
               - GET
               - POST
